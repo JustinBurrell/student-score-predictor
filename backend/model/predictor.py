@@ -3,21 +3,44 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
-from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import PolynomialFeatures, MinMaxScaler
 from pathlib import Path
 
 class ScorePredictor:
     VALID_SCORE_TYPES = ['math', 'reading', 'writing']
     
-    def __init__(self):
+    def __init__(self, data_path="../data/StudentsPerformance.csv"):
         self.models = {}
         self.initial_models = {}  # Models for initial predictions without scores
         self.model_dir = Path(__file__).parent / "saved_models"
         self.poly = PolynomialFeatures(degree=2, include_bias=False)
+        self.score_scaler = MinMaxScaler()
         
-        # Fit polynomial features with dummy data for two scores
-        dummy_data = np.array([[0.5, 0.5]])  # Two score features
-        self.poly.fit(dummy_data)
+        # Initialize with reasonable score ranges based on data analysis
+        self.score_ranges = {
+            'math': {'min': 35, 'max': 100},
+            'reading': {'min': 35, 'max': 100},
+            'writing': {'min': 35, 'max': 100}
+        }
+        
+        # Score correlation constraints (based on data analysis)
+        self.max_score_diff = 30  # Maximum allowed difference between scores
+        
+        # Fit score scaler and polynomial features with sample data
+        try:
+            df = pd.read_csv(data_path)
+            score_values = df[['math score', 'reading score', 'writing score']].values
+            self.score_scaler.fit(score_values)
+            
+            # Fit polynomial features with sample data
+            sample_scores = score_values[:, :2]  # Use first two scores as sample
+            self.poly.fit(sample_scores)
+        except Exception as e:
+            print(f"Warning: Could not fit preprocessors with training data: {e}")
+            # Use dummy data as fallback
+            dummy_scores = np.array([[0, 0, 0], [100, 100, 100]])
+            self.score_scaler.fit(dummy_scores)
+            self.poly.fit(dummy_scores[:, :2])
         
         self.load_models()
     
@@ -90,10 +113,16 @@ class ScorePredictor:
             # Train full model with score features
             X = processor.preprocess(df, exclude_score=score_type, include_scores=True)
             
-            # Add polynomial features for score columns
+            # Get and scale other scores for polynomial features
             other_scores = [s for s in self.VALID_SCORE_TYPES if s != score_type]
             score_values = df[[f'{s} score' for s in other_scores]].values
-            poly_features = self.poly.transform(score_values)
+            
+            # Fit and transform score scaler
+            self.score_scaler.fit(score_values)
+            scaled_scores = self.score_scaler.transform(score_values)
+            
+            # Create polynomial features from scaled scores
+            poly_features = self.poly.fit_transform(scaled_scores)
             
             # Add polynomial features to the feature set
             for i in range(poly_features.shape[1]):
@@ -186,6 +215,25 @@ class ScorePredictor:
             results[score_type] = self.train(score_type, data_path)
         return results
     
+    def _adjust_prediction(self, prediction, score_type, other_scores=None):
+        """Adjust prediction based on score constraints and relationships"""
+        # Ensure prediction is within valid range
+        prediction = np.clip(prediction, 
+                           self.score_ranges[score_type]['min'],
+                           self.score_ranges[score_type]['max'])
+        
+        # If we have other scores, apply correlation constraints
+        if other_scores:
+            other_scores_mean = np.mean(list(other_scores.values()))
+            # Limit maximum deviation from other scores
+            max_deviation = min(self.max_score_diff, abs(other_scores_mean - prediction))
+            if prediction < other_scores_mean - max_deviation:
+                prediction = other_scores_mean - max_deviation
+            elif prediction > other_scores_mean + max_deviation:
+                prediction = other_scores_mean + max_deviation
+        
+        return prediction
+    
     def predict(self, features, score_type):
         """Make predictions using the trained model for a specific score type"""
         if score_type not in self.VALID_SCORE_TYPES:
@@ -198,35 +246,51 @@ class ScorePredictor:
             # For the initial prediction without scores, use the initial model
             if not any('score' in col for col in features.columns):
                 prediction = self.initial_models[score_type].predict(features)
-                return float(prediction[0])
+                return self._adjust_prediction(prediction[0], score_type)
             
-            # For predictions with scores, use the full model with polynomial features
-            score_columns = [col for col in features.columns if 'score' in col]
-            features_with_poly = features.copy()
+            # Get other scores for polynomial features
+            other_scores = {}
+            for s in self.VALID_SCORE_TYPES:
+                if s != score_type and f'{s}_score_scaled' in features.columns:
+                    # Get original score from scaled value
+                    scaled_col = features[f'{s}_score_scaled'].values.reshape(-1, 1)
+                    other_scores[s] = scaled_col[0][0] * 100  # Assuming scores are scaled 0-1
             
-            if score_columns:
-                # Get the two other score types
-                other_scores = [s for s in self.VALID_SCORE_TYPES if s != score_type]
-                score_values = np.zeros((features.shape[0], 2))  # Always use 2 scores
+            # Create polynomial features from scaled scores if we have them
+            if other_scores:
+                # Create a full score array with zeros for the target score
+                score_array = np.zeros((1, 3))  # Array for all three scores
+                score_names = ['math', 'reading', 'writing']
                 
-                # Fill in available score values
-                for i, score in enumerate(other_scores):
-                    col_name = f"{score} score"
-                    if col_name in features.columns:
-                        score_values[:, i] = features[col_name].values
+                # Fill in the available scores
+                for i, name in enumerate(score_names):
+                    if name in other_scores:
+                        score_array[0, i] = other_scores[name]
                 
-                # Generate polynomial features
-                poly_features = self.poly.transform(score_values)
+                # Scale the scores
+                scaled_scores = self.score_scaler.transform(score_array)
                 
-                # Add polynomial features to the feature set
+                # Extract just the scores we need (excluding the target score)
+                other_scores_idx = [i for i, name in enumerate(score_names) if name != score_type]
+                scaled_scores_subset = scaled_scores[:, other_scores_idx]
+                
+                # Create polynomial features
+                poly_features = self.poly.transform(scaled_scores_subset)
+                
+                # Add polynomial features to input features
+                features_with_poly = features.copy()
                 for i in range(poly_features.shape[1]):
                     features_with_poly[f'poly_{i}'] = poly_features[:, i]
+                
+                prediction = self.models[score_type].predict(features_with_poly)
+                return self._adjust_prediction(prediction[0], score_type, other_scores)
             
-            prediction = self.models[score_type].predict(features_with_poly)
-            return float(prediction[0])
+            # If we don't have other scores, use the model directly
+            prediction = self.models[score_type].predict(features)
+            return self._adjust_prediction(prediction[0], score_type)
             
         except Exception as e:
-            raise Exception(f"Error making {score_type} score prediction: {e}")
+            raise Exception(f"Error making prediction: {e}")
     
     def predict_all(self, features):
         """Make predictions for all score types"""
