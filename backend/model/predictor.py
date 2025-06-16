@@ -21,14 +21,17 @@ class MathScorePredictor:
         else:
             self.model = RandomForestRegressor()
     
-    def train(self, data_path="../data/StudentsPerformance_cleaned.csv"):
+    def train(self, data_path="../data/StudentsPerformance.csv"):
         """Train the model using the cleaned dataset"""
         try:
+            from utils.data_processor import DataProcessor
+            
             # Load and prepare data
             df = pd.read_csv(data_path)
             
-            # Separate features and target
-            X = df.drop(['math score', 'math_score_scaled'], axis=1)
+            # Preprocess features
+            processor = DataProcessor()
+            X = processor.preprocess(df)
             y = df['math score']
             
             # Split data
@@ -61,14 +64,9 @@ class MathScorePredictor:
             raise Exception("Model not trained. Please train the model first.")
         
         try:
-            # Convert features to DataFrame if needed
-            if isinstance(features, dict):
-                features = pd.DataFrame([features])
-            
             # Make prediction
             prediction = self.model.predict(features)
-            
-            return prediction[0]  # Return single prediction value
+            return float(prediction[0])  # Return single prediction value
             
         except Exception as e:
             raise Exception(f"Error making prediction: {e}") 
