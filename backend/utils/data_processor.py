@@ -40,10 +40,11 @@ class DataProcessor:
         except Exception as e:
             print(f"Warning: Could not fit preprocessors with training data: {e}")
     
-    def preprocess(self, input_data, exclude_score='math'):
+    def preprocess(self, input_data, exclude_score='math', include_scores=True):
         """
         Preprocess input data for prediction
         exclude_score: The score type being predicted (to exclude from features)
+        include_scores: Whether to include score-related features
         """
         try:
             # Convert input to DataFrame if it's a dict
@@ -75,22 +76,23 @@ class DataProcessor:
                 ordered=True
             ).codes
             
-            # Scale other scores (excluding the prediction target)
-            other_scores = [s for s in ['math', 'reading', 'writing'] if s != exclude_score]
-            if all(f'{s} score' in df.columns for s in other_scores):
-                scaled_scores = self.scalers[exclude_score].transform(df[[f'{s} score' for s in other_scores]])
-                for i, score_type in enumerate(other_scores):
-                    processed_df[f'{score_type}_score_scaled'] = scaled_scores[:, i]
-                
-                # Calculate and scale average of other scores
-                processed_df['avg_other_scores'] = df[[f'{s} score' for s in other_scores]].mean(axis=1)
-                
-                # Add score difference feature
-                if len(other_scores) > 1:
-                    processed_df['score_difference'] = df[f'{other_scores[0]} score'] - df[f'{other_scores[1]} score']
-                
-                # Add score ratio feature
-                processed_df['score_ratio'] = df[f'{other_scores[0]} score'] / df[f'{other_scores[1]} score']
+            # Add score-related features if requested
+            if include_scores:
+                # Scale other scores (excluding the prediction target)
+                other_scores = [s for s in ['math', 'reading', 'writing'] if s != exclude_score]
+                if all(f'{s} score' in df.columns for s in other_scores):
+                    scaled_scores = self.scalers[exclude_score].transform(df[[f'{s} score' for s in other_scores]])
+                    for i, score_type in enumerate(other_scores):
+                        processed_df[f'{score_type}_score_scaled'] = scaled_scores[:, i]
+                    
+                    # Calculate and scale average of other scores
+                    processed_df['avg_other_scores'] = df[[f'{s} score' for s in other_scores]].mean(axis=1)
+                    
+                    # Add score difference feature
+                    if len(other_scores) > 1:
+                        processed_df['score_difference'] = df[f'{other_scores[0]} score'] - df[f'{other_scores[1]} score']
+                        # Add score ratio feature
+                        processed_df['score_ratio'] = df[f'{other_scores[0]} score'] / df[f'{other_scores[1]} score']
             
             # Create advanced interaction features
             processed_df['prep_education_interaction'] = \
@@ -106,16 +108,21 @@ class DataProcessor:
             
             # Select and order features correctly
             feature_columns = [
-                *[f'{s}_score_scaled' for s in other_scores],
                 'parental_education_level',
-                'avg_other_scores',
                 'prep_education_interaction',
                 'lunch_education_interaction',
                 'gender_prep_interaction'
             ]
             
-            if len(other_scores) > 1:
-                feature_columns.extend(['score_difference', 'score_ratio'])
+            if include_scores:
+                other_scores = [s for s in ['math', 'reading', 'writing'] if s != exclude_score]
+                feature_columns = [
+                    *[f'{s}_score_scaled' for s in other_scores],
+                    *feature_columns,
+                    'avg_other_scores'
+                ]
+                if len(other_scores) > 1:
+                    feature_columns.extend(['score_difference', 'score_ratio'])
             
             feature_columns.extend(onehot_columns)
             

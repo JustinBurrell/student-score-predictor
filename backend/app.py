@@ -24,8 +24,11 @@ def predict_score(score_type):
         # Get input data from request
         input_data = request.get_json()
         
+        # Check if we have score features
+        has_scores = any('score' in key for key in input_data.keys())
+        
         # Preprocess input data
-        processed_data = data_processor.preprocess(input_data, exclude_score=score_type)
+        processed_data = data_processor.preprocess(input_data, exclude_score=score_type, include_scores=has_scores)
         
         # Get prediction
         prediction = predictor.predict(processed_data, score_type)
@@ -50,8 +53,12 @@ def predict_all_scores():
         
         # Get predictions for all score types
         predictions = {}
+        
+        # Process input data once for initial predictions
+        processed_data = data_processor.preprocess(input_data, exclude_score='math', include_scores=False)
+        
+        # Get initial predictions for all scores
         for score_type in ScorePredictor.VALID_SCORE_TYPES:
-            processed_data = data_processor.preprocess(input_data, exclude_score=score_type)
             predictions[f"{score_type}_score"] = predictor.predict(processed_data, score_type)
         
         return jsonify({
