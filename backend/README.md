@@ -202,13 +202,39 @@ Server will start on port 5001 (http://localhost:5001)
    - LRU cache for frequent prediction patterns
    - Cache size: 1000 entries
    - Automatic cache invalidation on model retraining
+   - Average response time: 0.419 seconds under load
 
 2. **Feature Importance Analysis**:
    - Separate tracking for initial and full models
    - Detailed importance rankings for all features
    - Interaction terms analysis
+   - Real-time feature importance endpoint
 
 3. **Confidence Intervals**:
    - 95% confidence bounds for all predictions
    - Based on Random Forest tree variance
-   - Adjusted for score constraints and correlations 
+   - Adjusted for score constraints and correlations
+
+## Testing Suite
+
+1. **Edge Case Testing**:
+   - Extreme value combinations (0-100 score ranges)
+   - Unusual feature combinations (e.g., high education with free lunch)
+   - Score correlation constraints
+   - Boundary condition handling
+
+2. **Load Testing**:
+   - Concurrent request handling (50+ simultaneous requests)
+   - Response time metrics:
+     - Average: 0.419 seconds
+     - Maximum: 0.594 seconds
+     - Minimum: 0.262 seconds
+   - Memory usage monitoring
+   - Cache performance tracking
+
+3. **Integration Testing**:
+   - API endpoint validation
+   - Data preprocessing verification
+   - Model prediction consistency
+   - Error handling and recovery
+   - Cross-score prediction validation 
