@@ -1,6 +1,6 @@
 # Math Score Predictor Backend
 
-A Flask-based machine learning service that predicts student academic scores using Random Forest models with advanced feature engineering.
+A Flask-based machine learning service that predicts student academic scores using Random Forest models with advanced feature engineering, confidence intervals, and model interpretability features.
 
 ## Machine Learning Implementation
 
@@ -12,6 +12,9 @@ A Flask-based machine learning service that predicts student academic scores usi
   - Polynomial features for score relationships
   - Score differences and ratios
   - Educational and demographic interaction terms
+- **Uncertainty Quantification**: 95% confidence intervals using tree variance
+- **Model Versioning**: Semantic versioning (current: 1.0.0)
+- **Performance Tracking**: Automated metrics collection and storage
 
 ### Model Performance
 
@@ -82,11 +85,32 @@ Response:
 ```json
 {
     "status": "healthy",
-    "message": "Service is running"
+    "message": "Service is running",
+    "model_version": "1.0.0"
 }
 ```
 
-### 2. Predict Individual Score
+### 2. Model Metadata
+```bash
+curl http://localhost:5001/model/metadata
+```
+Response includes:
+- Model version
+- Last training date
+- Training dataset size
+- Performance metrics for all models
+- Feature importance rankings
+
+### 3. Feature Importance
+```bash
+# Get all feature importance
+curl http://localhost:5001/model/feature-importance
+
+# Get feature importance for specific score type
+curl "http://localhost:5001/model/feature-importance?score_type=math"
+```
+
+### 4. Predict Individual Score
 ```bash
 # Predict Math Score
 curl -X POST http://localhost:5001/predict/math \
@@ -100,35 +124,21 @@ curl -X POST http://localhost:5001/predict/math \
     "reading score": 75,
     "writing score": 80
   }'
-
-# Predict Reading Score
-curl -X POST http://localhost:5001/predict/reading \
-  -H "Content-Type: application/json" \
-  -d '{
-    "gender": "female",
-    "race/ethnicity": "group C",
-    "parental level of education": "bachelor'\''s degree",
-    "lunch": "standard",
-    "test preparation course": "completed",
-    "math score": 82,
-    "writing score": 78
-  }'
-
-# Predict Writing Score
-curl -X POST http://localhost:5001/predict/writing \
-  -H "Content-Type: application/json" \
-  -d '{
-    "gender": "female",
-    "race/ethnicity": "group C",
-    "parental level of education": "bachelor'\''s degree",
-    "lunch": "standard",
-    "test preparation course": "completed",
-    "math score": 82,
-    "reading score": 75
-  }'
+```
+Response includes:
+```json
+{
+    "success": true,
+    "predicted_math_score": 70.5,
+    "confidence_interval": {
+        "lower": 65.2,
+        "upper": 75.8
+    },
+    "input_features": { ... }
+}
 ```
 
-### 3. Predict All Scores
+### 5. Predict All Scores
 ```bash
 curl -X POST http://localhost:5001/predict/all \
   -H "Content-Type: application/json" \
@@ -140,8 +150,9 @@ curl -X POST http://localhost:5001/predict/all \
     "test preparation course": "completed"
   }'
 ```
+Response includes predictions and confidence intervals for all scores.
 
-### 4. Retrain Models
+### 6. Retrain Models
 ```bash
 # Retrain all models
 curl -X POST http://localhost:5001/model/retrain
@@ -184,3 +195,20 @@ python app.py
 ```
 
 Server will start on port 5001 (http://localhost:5001) 
+
+## Performance Optimizations
+
+1. **Prediction Caching**:
+   - LRU cache for frequent prediction patterns
+   - Cache size: 1000 entries
+   - Automatic cache invalidation on model retraining
+
+2. **Feature Importance Analysis**:
+   - Separate tracking for initial and full models
+   - Detailed importance rankings for all features
+   - Interaction terms analysis
+
+3. **Confidence Intervals**:
+   - 95% confidence bounds for all predictions
+   - Based on Random Forest tree variance
+   - Adjusted for score constraints and correlations 

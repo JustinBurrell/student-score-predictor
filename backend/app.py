@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
 from model.predictor import ScorePredictor
 from utils.data_processor import DataProcessor
+from functools import lru_cache
+import hashlib
+import json
 
 app = Flask(__name__)
 
@@ -8,9 +11,65 @@ app = Flask(__name__)
 data_processor = DataProcessor()
 predictor = ScorePredictor()
 
+def get_cache_key(data):
+    """Generate a cache key from input data"""
+    # Sort the dictionary to ensure consistent keys for same data
+    sorted_data = json.dumps(data, sort_keys=True)
+    return hashlib.md5(sorted_data.encode()).hexdigest()
+
+@lru_cache(maxsize=1000)
+def cached_predict(cache_key, score_type=None):
+    """Cached prediction function"""
+    # Reconstruct input data from cache key
+    try:
+        input_data = json.loads(cache_key)
+        if score_type:
+            processed_data = data_processor.preprocess(input_data, exclude_score=score_type, include_scores='score' in str(input_data))
+            return predictor.predict(processed_data, score_type)
+        else:
+            processed_data = data_processor.preprocess(input_data, exclude_score='math', include_scores=False)
+            return predictor.predict_all(processed_data)
+    except Exception as e:
+        raise Exception(f"Error in cached prediction: {e}")
+
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "healthy", "message": "Service is running"})
+    return jsonify({
+        "status": "healthy",
+        "message": "Service is running",
+        "model_version": predictor.VERSION
+    })
+
+@app.route('/model/metadata', methods=['GET'])
+def get_model_metadata():
+    """Get model metadata including version, training date, and performance metrics"""
+    try:
+        metadata = predictor.get_metadata()
+        return jsonify({
+            "success": True,
+            "metadata": metadata
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route('/model/feature-importance', methods=['GET'])
+def get_feature_importance():
+    """Get feature importance for all or specific score type"""
+    try:
+        score_type = request.args.get('score_type')
+        importance = predictor.get_feature_importance(score_type)
+        return jsonify({
+            "success": True,
+            "feature_importance": importance
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 400
 
 @app.route('/predict/<score_type>', methods=['POST'])
 def predict_score(score_type):
@@ -24,18 +83,20 @@ def predict_score(score_type):
         # Get input data from request
         input_data = request.get_json()
         
-        # Check if we have score features
-        has_scores = any('score' in key for key in input_data.keys())
-        
-        # Preprocess input data
-        processed_data = data_processor.preprocess(input_data, exclude_score=score_type, include_scores=has_scores)
-        
-        # Get prediction
-        prediction = predictor.predict(processed_data, score_type)
+        # Generate cache key and try to get cached result
+        cache_key = json.dumps(input_data, sort_keys=True)
+        try:
+            result = cached_predict(cache_key, score_type)
+        except Exception as e:
+            # If cache fails, proceed with normal prediction
+            has_scores = any('score' in key for key in input_data.keys())
+            processed_data = data_processor.preprocess(input_data, exclude_score=score_type, include_scores=has_scores)
+            result = predictor.predict(processed_data, score_type)
         
         return jsonify({
             "success": True,
-            f"predicted_{score_type}_score": prediction,
+            f"predicted_{score_type}_score": result['prediction'],
+            "confidence_interval": result['confidence_interval'],
             "input_features": input_data
         })
     
@@ -51,15 +112,20 @@ def predict_all_scores():
         # Get input data from request
         input_data = request.get_json()
         
-        # Get predictions for all score types
-        predictions = {}
-        
-        # Process input data once for initial predictions
-        processed_data = data_processor.preprocess(input_data, exclude_score='math', include_scores=False)
-        
-        # Get initial predictions for all scores
-        for score_type in ScorePredictor.VALID_SCORE_TYPES:
-            predictions[f"{score_type}_score"] = predictor.predict(processed_data, score_type)
+        # Generate cache key and try to get cached result
+        cache_key = json.dumps(input_data, sort_keys=True)
+        try:
+            predictions = cached_predict(cache_key)
+        except Exception as e:
+            # If cache fails, proceed with normal prediction
+            processed_data = data_processor.preprocess(input_data, exclude_score='math', include_scores=False)
+            predictions = {}
+            for score_type in ScorePredictor.VALID_SCORE_TYPES:
+                result = predictor.predict(processed_data, score_type)
+                predictions[f"{score_type}_score"] = {
+                    'prediction': result['prediction'],
+                    'confidence_interval': result['confidence_interval']
+                }
         
         return jsonify({
             "success": True,
@@ -91,6 +157,9 @@ def retrain_model():
                 "success": False,
                 "error": f"Invalid score type. Must be one of {ScorePredictor.VALID_SCORE_TYPES}"
             }), 400
+        
+        # Clear prediction cache after retraining
+        cached_predict.cache_clear()
         
         return jsonify({
             "success": True,

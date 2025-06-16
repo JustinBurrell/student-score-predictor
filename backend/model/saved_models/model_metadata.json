@@ -1,0 +1,195 @@
+{
+  "version": "1.0.0",
+  "last_training_date": "2025-06-16T19:38:32.452020",
+  "model_metrics": {
+    "math": {
+      "initial_model": {
+        "r2_score": 0.10859447835214157,
+        "cv_scores": {
+          "mean": 0.10859447835214157,
+          "std": 0.02798542829397864
+        }
+      },
+      "full_model": {
+        "r2_score": 0.8427980747894915,
+        "cv_scores": {
+          "mean": 0.8427980747894915,
+          "std": 0.021958979604905504
+        }
+      }
+    },
+    "reading": {
+      "initial_model": {
+        "r2_score": 0.0881476478716984,
+        "cv_scores": {
+          "mean": 0.0881476478716984,
+          "std": 0.07083729070201403
+        }
+      },
+      "full_model": {
+        "r2_score": 0.9145364330074737,
+        "cv_scores": {
+          "mean": 0.9145364330074737,
+          "std": 0.005504011065493181
+        }
+      }
+    },
+    "writing": {
+      "initial_model": {
+        "r2_score": 0.2064422731460583,
+        "cv_scores": {
+          "mean": 0.2064422731460583,
+          "std": 0.059372525071849126
+        }
+      },
+      "full_model": {
+        "r2_score": 0.9334767836022969,
+        "cv_scores": {
+          "mean": 0.9334767836022969,
+          "std": 0.005765499563304498
+        }
+      }
+    }
+  },
+  "feature_importance": {
+    "math": {
+      "initial_model": {
+        "parental_education_level": 0.17909921267215775,
+        "lunch_standard": 0.12365651201395614,
+        "lunch_education_interaction": 0.11715778588873854,
+        "lunch_free/reduced": 0.10976128060777023,
+        "race/ethnicity_group E": 0.08090570389041497,
+        "prep_education_interaction": 0.07311068322613025,
+        "gender_female": 0.04761121251345107,
+        "gender_male": 0.0453236912739137,
+        "race/ethnicity_group B": 0.03702885754030329,
+        "race/ethnicity_group C": 0.03671007074028761,
+        "race/ethnicity_group D": 0.0363614312038317,
+        "race/ethnicity_group A": 0.03575560262717018,
+        "test preparation course_none": 0.0320518172506871,
+        "test preparation course_completed": 0.029630071219961696,
+        "gender_prep_interaction": 0.01583606733122574
+      },
+      "full_model": {
+        "poly_3": 0.17768074800101202,
+        "avg_other_scores": 0.11879935446686193,
+        "reading_score_scaled": 0.10264757346057658,
+        "poly_2": 0.10093519326630178,
+        "poly_0": 0.0939892504137137,
+        "poly_4": 0.07348932957378096,
+        "writing_score_scaled": 0.06576681327009738,
+        "poly_1": 0.062138922347417205,
+        "gender_male": 0.05942526523465935,
+        "gender_female": 0.05735617791699478,
+        "score_ratio": 0.014670989637823807,
+        "lunch_education_interaction": 0.011014719373670925,
+        "gender_prep_interaction": 0.0086573839507821,
+        "score_difference": 0.008451499812388701,
+        "lunch_free/reduced": 0.008418999429197346,
+        "lunch_standard": 0.007885740758047132,
+        "race/ethnicity_group E": 0.005944897455572643,
+        "parental_education_level": 0.005517713096381403,
+        "prep_education_interaction": 0.004360901847133211,
+        "test preparation course_completed": 0.003345827159490434,
+        "test preparation course_none": 0.0027797564433496885,
+        "race/ethnicity_group C": 0.002344197908065011,
+        "race/ethnicity_group D": 0.001802926875355168,
+        "race/ethnicity_group B": 0.0016133060720524652,
+        "race/ethnicity_group A": 0.0009625122292742962
+      }
+    },
+    "reading": {
+      "initial_model": {
+        "parental_education_level": 0.1812409064168576,
+        "lunch_education_interaction": 0.10909039079102982,
+        "prep_education_interaction": 0.10278827118341456,
+        "gender_male": 0.07716104857578758,
+        "gender_female": 0.0748900055073203,
+        "lunch_free/reduced": 0.0655454211907682,
+        "lunch_standard": 0.057210703653441254,
+        "gender_prep_interaction": 0.05456970510907038,
+        "test preparation course_none": 0.04317711232318868,
+        "race/ethnicity_group E": 0.042351310050707996,
+        "race/ethnicity_group A": 0.041837299314440815,
+        "race/ethnicity_group B": 0.04076171490023749,
+        "test preparation course_completed": 0.03968242355195858,
+        "race/ethnicity_group D": 0.03622155427938069,
+        "race/ethnicity_group C": 0.033472133152395896
+      },
+      "full_model": {
+        "poly_4": 0.2077123185908743,
+        "writing_score_scaled": 0.18454312771727618,
+        "poly_1": 0.17186466642108325,
+        "poly_3": 0.14480101229813686,
+        "avg_other_scores": 0.10951653926894657,
+        "math_score_scaled": 0.05401766591311103,
+        "poly_0": 0.047512196869623234,
+        "poly_2": 0.03673466682610131,
+        "score_ratio": 0.012884611335584748,
+        "score_difference": 0.00715527629146147,
+        "gender_female": 0.003193468691429898,
+        "prep_education_interaction": 0.002468494653487657,
+        "lunch_education_interaction": 0.002454686414345635,
+        "gender_male": 0.002448831315334466,
+        "parental_education_level": 0.002234028370744116,
+        "gender_prep_interaction": 0.0020000122284038364,
+        "test preparation course_none": 0.0018151555883969795,
+        "test preparation course_completed": 0.001555245370491476,
+        "lunch_free/reduced": 0.0011102518702680905,
+        "race/ethnicity_group C": 0.0010391158258197454,
+        "race/ethnicity_group D": 0.001024737043551865,
+        "lunch_standard": 0.0009589858566482932,
+        "race/ethnicity_group B": 0.000554552214897449,
+        "race/ethnicity_group E": 0.00022229491369800324,
+        "race/ethnicity_group A": 0.0001780581102836239
+      }
+    },
+    "writing": {
+      "initial_model": {
+        "parental_education_level": 0.16924489109290697,
+        "lunch_education_interaction": 0.10285329964566421,
+        "prep_education_interaction": 0.10222283557487667,
+        "gender_male": 0.08899939427802599,
+        "gender_female": 0.08536950046423188,
+        "gender_prep_interaction": 0.07485497059547941,
+        "lunch_standard": 0.05897143164687792,
+        "test preparation course_none": 0.058097756534718124,
+        "lunch_free/reduced": 0.055884564642659354,
+        "test preparation course_completed": 0.05429538293608132,
+        "race/ethnicity_group D": 0.03496411596430889,
+        "race/ethnicity_group B": 0.03174458688191687,
+        "race/ethnicity_group C": 0.02819979301092034,
+        "race/ethnicity_group A": 0.02801287571989296,
+        "race/ethnicity_group E": 0.026284601011439087
+      },
+      "full_model": {
+        "poly_4": 0.18178550735522866,
+        "reading_score_scaled": 0.17309181412664199,
+        "poly_1": 0.15094607837685287,
+        "poly_3": 0.13981444648263722,
+        "avg_other_scores": 0.11156847439182019,
+        "math_score_scaled": 0.0662199422663474,
+        "poly_0": 0.053500272599570166,
+        "poly_2": 0.037978677410213144,
+        "gender_female": 0.0130143626892907,
+        "score_ratio": 0.012843374827248358,
+        "gender_male": 0.0104521285750802,
+        "score_difference": 0.008042658645072207,
+        "gender_prep_interaction": 0.008009092250639772,
+        "test preparation course_completed": 0.006237831441495048,
+        "test preparation course_none": 0.0060740835803741134,
+        "prep_education_interaction": 0.005861003929258541,
+        "parental_education_level": 0.004389531643429264,
+        "lunch_education_interaction": 0.00394810047383446,
+        "race/ethnicity_group D": 0.0013164765827197967,
+        "race/ethnicity_group C": 0.0010904461901309443,
+        "lunch_standard": 0.0010543996937472297,
+        "lunch_free/reduced": 0.0009488050927229743,
+        "race/ethnicity_group B": 0.0007187715257189997,
+        "race/ethnicity_group E": 0.000619961121773589,
+        "race/ethnicity_group A": 0.0004737587281522261
+      }
+    }
+  },
+  "training_size": 1000
+}

@@ -5,9 +5,12 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.preprocessing import PolynomialFeatures, MinMaxScaler
 from pathlib import Path
+import datetime
+import json
 
 class ScorePredictor:
     VALID_SCORE_TYPES = ['math', 'reading', 'writing']
+    VERSION = "1.0.0"  # Semantic versioning
     
     def __init__(self, data_path="../data/StudentsPerformance.csv"):
         self.models = {}
@@ -15,6 +18,14 @@ class ScorePredictor:
         self.model_dir = Path(__file__).parent / "saved_models"
         self.poly = PolynomialFeatures(degree=2, include_bias=False)
         self.score_scaler = MinMaxScaler()
+        self.metadata = {
+            'version': self.VERSION,
+            'last_training_date': None,
+            'model_metrics': {},
+            'feature_importance': {},
+            'training_size': None
+        }
+        self.metadata_file = self.model_dir / "model_metadata.json"
         
         # Initialize with reasonable score ranges based on data analysis
         self.score_ranges = {
@@ -25,6 +36,9 @@ class ScorePredictor:
         
         # Score correlation constraints (based on data analysis)
         self.max_score_diff = 30  # Maximum allowed difference between scores
+        
+        # Load metadata if exists
+        self._load_metadata()
         
         # Fit score scaler and polynomial features with sample data
         try:
@@ -44,6 +58,36 @@ class ScorePredictor:
         
         self.load_models()
     
+    def _load_metadata(self):
+        """Load model metadata from file"""
+        if self.metadata_file.exists():
+            try:
+                with open(self.metadata_file, 'r') as f:
+                    self.metadata = json.load(f)
+            except Exception as e:
+                print(f"Warning: Could not load metadata: {e}")
+
+    def _save_metadata(self):
+        """Save model metadata to file"""
+        self.model_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            with open(self.metadata_file, 'w') as f:
+                json.dump(self.metadata, f, indent=2, default=str)
+        except Exception as e:
+            print(f"Warning: Could not save metadata: {e}")
+
+    def get_metadata(self):
+        """Return current model metadata"""
+        return self.metadata
+
+    def get_feature_importance(self, score_type=None):
+        """Return feature importance for specified score type or all"""
+        if score_type:
+            if score_type not in self.VALID_SCORE_TYPES:
+                raise ValueError(f"Invalid score type. Must be one of {self.VALID_SCORE_TYPES}")
+            return self.metadata['feature_importance'].get(score_type, {})
+        return self.metadata['feature_importance']
+
     def load_models(self):
         """Load all trained models if they exist, otherwise create new ones"""
         self.model_dir.mkdir(parents=True, exist_ok=True)
@@ -80,6 +124,10 @@ class ScorePredictor:
             
             # Load and prepare data
             df = pd.read_csv(data_path)
+            
+            # Update training metadata
+            self.metadata['last_training_date'] = datetime.datetime.now().isoformat()
+            self.metadata['training_size'] = len(df)
             
             # Train initial model without score features
             processor = DataProcessor()
@@ -174,6 +222,32 @@ class ScorePredictor:
             feature_importance = dict(zip(X.columns, 
                                        self.models[score_type].feature_importances_))
             
+            # Update metadata with model metrics and feature importance
+            self.metadata['model_metrics'][score_type] = {
+                'initial_model': {
+                    'r2_score': grid_search_initial.best_score_,
+                    'cv_scores': {
+                        'mean': cv_scores_initial.mean(),
+                        'std': cv_scores_initial.std()
+                    }
+                },
+                'full_model': {
+                    'r2_score': grid_search.best_score_,
+                    'cv_scores': {
+                        'mean': cv_scores.mean(),
+                        'std': cv_scores.std()
+                    }
+                }
+            }
+            
+            self.metadata['feature_importance'][score_type] = {
+                'initial_model': dict(sorted(feature_importance_initial.items(), key=lambda x: x[1], reverse=True)),
+                'full_model': dict(sorted(feature_importance.items(), key=lambda x: x[1], reverse=True))
+            }
+            
+            # Save metadata
+            self._save_metadata()
+            
             return {
                 "initial_model": {
                     "best_params": grid_search_initial.best_params_,
@@ -245,49 +319,57 @@ class ScorePredictor:
         try:
             # For the initial prediction without scores, use the initial model
             if not any('score' in col for col in features.columns):
-                prediction = self.initial_models[score_type].predict(features)
-                return self._adjust_prediction(prediction[0], score_type)
+                predictions = self.initial_models[score_type].predict(features)
+                # Get confidence intervals using tree variance
+                trees_predictions = np.array([tree.predict(features) 
+                                           for tree in self.initial_models[score_type].estimators_])
+                confidence_interval = np.percentile(trees_predictions, [2.5, 97.5], axis=0)
+                
+                prediction = self._adjust_prediction(predictions[0], score_type)
+                ci_lower = self._adjust_prediction(confidence_interval[0][0], score_type)
+                ci_upper = self._adjust_prediction(confidence_interval[1][0], score_type)
+                
+                return {
+                    'prediction': prediction,
+                    'confidence_interval': {
+                        'lower': ci_lower,
+                        'upper': ci_upper
+                    }
+                }
             
-            # Get other scores for polynomial features
-            other_scores = {}
-            for s in self.VALID_SCORE_TYPES:
-                if s != score_type and f'{s}_score_scaled' in features.columns:
-                    # Get original score from scaled value
-                    scaled_col = features[f'{s}_score_scaled'].values.reshape(-1, 1)
-                    other_scores[s] = scaled_col[0][0] * 100  # Assuming scores are scaled 0-1
+            # Get and scale other scores for polynomial features
+            other_scores = [s for s in self.VALID_SCORE_TYPES if s != score_type]
+            score_values = np.array([[features[f'{s}_score'].iloc[0] for s in other_scores]])
+            scaled_scores = self.score_scaler.transform(score_values)
             
-            # Create polynomial features from scaled scores if we have them
-            if other_scores:
-                # Create a full score array with zeros for the target score
-                score_array = np.zeros((1, 3))  # Array for all three scores
-                score_names = ['math', 'reading', 'writing']
-                
-                # Fill in the available scores
-                for i, name in enumerate(score_names):
-                    if name in other_scores:
-                        score_array[0, i] = other_scores[name]
-                
-                # Scale the scores
-                scaled_scores = self.score_scaler.transform(score_array)
-                
-                # Extract just the scores we need (excluding the target score)
-                other_scores_idx = [i for i, name in enumerate(score_names) if name != score_type]
-                scaled_scores_subset = scaled_scores[:, other_scores_idx]
-                
-                # Create polynomial features
-                poly_features = self.poly.transform(scaled_scores_subset)
-                
-                # Add polynomial features to input features
-                features_with_poly = features.copy()
-                for i in range(poly_features.shape[1]):
-                    features_with_poly[f'poly_{i}'] = poly_features[:, i]
-                
-                prediction = self.models[score_type].predict(features_with_poly)
-                return self._adjust_prediction(prediction[0], score_type, other_scores)
+            # Create polynomial features from scaled scores
+            poly_features = self.poly.transform(scaled_scores)
             
-            # If we don't have other scores, use the model directly
-            prediction = self.models[score_type].predict(features)
-            return self._adjust_prediction(prediction[0], score_type)
+            # Add polynomial features to the feature set
+            for i in range(poly_features.shape[1]):
+                features[f'poly_{i}'] = poly_features[0, i]
+            
+            predictions = self.models[score_type].predict(features)
+            
+            # Get confidence intervals using tree variance
+            trees_predictions = np.array([tree.predict(features) 
+                                       for tree in self.models[score_type].estimators_])
+            confidence_interval = np.percentile(trees_predictions, [2.5, 97.5], axis=0)
+            
+            prediction = self._adjust_prediction(predictions[0], score_type, 
+                                              {s: features[f'{s}_score'].iloc[0] for s in other_scores})
+            ci_lower = self._adjust_prediction(confidence_interval[0][0], score_type,
+                                            {s: features[f'{s}_score'].iloc[0] for s in other_scores})
+            ci_upper = self._adjust_prediction(confidence_interval[1][0], score_type,
+                                            {s: features[f'{s}_score'].iloc[0] for s in other_scores})
+            
+            return {
+                'prediction': prediction,
+                'confidence_interval': {
+                    'lower': ci_lower,
+                    'upper': ci_upper
+                }
+            }
             
         except Exception as e:
             raise Exception(f"Error making prediction: {e}")
