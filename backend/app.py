@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from model.predictor import ScorePredictor
 from utils.data_processor import DataProcessor
 from functools import lru_cache
@@ -6,6 +7,15 @@ import hashlib
 import json
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:3000"],  # React dev server
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Initialize ML components
 data_processor = DataProcessor()
