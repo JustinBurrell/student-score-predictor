@@ -43,7 +43,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-4 text-center text-sm text-white/50">
-          © {new Date().getFullYear()} Student Score Predictor. All rights reserved.
+          © {new Date().getFullYear()} Justin Burrell. All rights reserved.
         </div>
       </div>
     </footer>

@@ -5,13 +5,19 @@ from utils.data_processor import DataProcessor
 from functools import lru_cache
 import hashlib
 import json
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 
 # Enable CORS for all routes
+CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(',')
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:3000"],  # React dev server
+        "origins": CORS_ORIGINS,
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type"]
     }
