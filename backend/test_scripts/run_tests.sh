@@ -19,12 +19,12 @@ run_python_test() {
     echo -e "\n🐍 Running $test_name..."
     echo "----------------------------------------"
     
-    if [ -f "$test_file" ]; then
+    if [ -f "backend/test_scripts/$test_file" ]; then
         cd backend
         python test_scripts/$test_file
         cd ..
     else
-        echo "❌ Test file not found: $test_file"
+        echo "❌ Test file not found: backend/test_scripts/$test_file"
     fi
 }
 
