@@ -75,10 +75,10 @@ const Home = () => {
   return (
     <div className="flex flex-col">
       {/* Title Section */}
-      <div className="text-center pt-52 pb-32">
+      <div className="text-center pt-24 pb-16 sm:pt-32 sm:pb-24 md:pt-52 md:pb-32 px-2">
         <motion.h1 
           key="title"
-          className="text-7xl font-bold text-white mb-8"
+          className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-4 sm:mb-8"
           variants={fadeInUp(0)}
           initial="hidden"
           animate={isLoaded ? "visible" : "hidden"}
@@ -88,7 +88,7 @@ const Home = () => {
         </motion.h1>
         <motion.p 
           key="description"
-          className="text-2xl text-white text-opacity-90 max-w-3xl mx-auto"
+          className="text-lg sm:text-xl md:text-2xl text-white text-opacity-90 max-w-xs sm:max-w-2xl md:max-w-3xl mx-auto"
           variants={fadeInUp(0.3)}
           initial="hidden"
           animate={isLoaded ? "visible" : "hidden"}
@@ -99,8 +99,8 @@ const Home = () => {
       </div>
 
       {/* Cards Section */}
-      <div className="pt-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto px-4">
+      <div className="pt-8 sm:pt-16 md:pt-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12 max-w-xs sm:max-w-2xl md:max-w-6xl mx-auto px-2 sm:px-4">
           <motion.div
             key="card1"
             variants={slideLeft(0.6)}
@@ -147,11 +147,11 @@ const Home = () => {
       </div>
 
       {/* Features Section */}
-      <div className="mt-32 mb-16">
-        <div className="text-center mb-20">
+      <div className="mt-12 sm:mt-20 md:mt-32 mb-8 sm:mb-12 md:mb-16">
+        <div className="text-center mb-10 sm:mb-16 md:mb-20 px-2">
           <motion.h2 
             key="features-title"
-            className="text-4xl font-bold text-white mb-6"
+            className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4 md:mb-6"
             variants={fadeInUp(1.3)}
             initial="hidden"
             animate={isLoaded ? "visible" : "hidden"}
@@ -161,7 +161,7 @@ const Home = () => {
           </motion.h2>
           <motion.p 
             key="features-description"
-            className="text-xl text-white/80 max-w-2xl mx-auto"
+            className="text-base sm:text-lg md:text-xl text-white/80 max-w-xs sm:max-w-xl md:max-w-2xl mx-auto"
             variants={fadeInUp(1.5)}
             initial="hidden"
             animate={isLoaded ? "visible" : "hidden"}
@@ -170,7 +170,7 @@ const Home = () => {
             Discover how this project combines data science, machine learning, and modern web development to create an engaging educational tool.
           </motion.p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 md:gap-12 max-w-xs sm:max-w-2xl md:max-w-6xl mx-auto px-2 sm:px-4">
           {/* Top two cards - slide in from left */}
           <motion.div
             key="feature1"

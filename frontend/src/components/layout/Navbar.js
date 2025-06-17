@@ -10,13 +10,13 @@ const Navbar = () => {
   };
 
   return (
-    <div className="w-full h-16 bg-gradient-to-b from-black/20 to-transparent pt-12">
-      <div className="h-full flex justify-center items-center px-4">
-        <div className="bg-white/10 backdrop-blur-lg rounded-full px-6 py-2 shadow-lg">
-          <div className="flex space-x-8">
+    <div className="w-full h-14 sm:h-16 bg-gradient-to-b from-black/20 to-transparent pt-4 sm:pt-12">
+      <div className="h-full flex justify-center items-center px-2 sm:px-4">
+        <div className="bg-white/10 backdrop-blur-lg rounded-full px-3 py-1 sm:px-6 sm:py-2 shadow-lg">
+          <div className="flex space-x-4 sm:space-x-8">
             <Link
               to="/"
-              className={`px-4 py-2 rounded-full transition-all duration-300 ${
+              className={`px-2 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base transition-all duration-300 ${
                 isActive('/') 
                   ? 'bg-white/20 text-white' 
                   : 'text-white/70 hover:text-white'
@@ -26,7 +26,7 @@ const Navbar = () => {
             </Link>
             <Link
               to="/prediction"
-              className={`px-4 py-2 rounded-full transition-all duration-300 ${
+              className={`px-2 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base transition-all duration-300 ${
                 isActive('/prediction') 
                   ? 'bg-white/20 text-white' 
                   : 'text-white/70 hover:text-white'
@@ -36,7 +36,7 @@ const Navbar = () => {
             </Link>
             <Link
               to="/analysis"
-              className={`px-4 py-2 rounded-full transition-all duration-300 ${
+              className={`px-2 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base transition-all duration-300 ${
                 isActive('/analysis') 
                   ? 'bg-white/20 text-white' 
                   : 'text-white/70 hover:text-white'
@@ -46,7 +46,7 @@ const Navbar = () => {
             </Link>
             <Link
               to="/about"
-              className={`px-4 py-2 rounded-full transition-all duration-300 ${
+              className={`px-2 py-1 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base transition-all duration-300 ${
                 isActive('/about') 
                   ? 'bg-white/20 text-white' 
                   : 'text-white/70 hover:text-white'
