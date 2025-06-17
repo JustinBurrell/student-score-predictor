@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables
 load_dotenv()
@@ -198,6 +199,52 @@ def list_plots():
     # Return URLs relative to /static/plots/
     plot_urls = [f"/static/plots/{fname}" for fname in files]
     return jsonify({"success": True, "plots": plot_urls})
+
+@app.route('/debug/files', methods=['GET'])
+def debug_files():
+    """Debug endpoint to check file system and model loading status"""
+    debug_info = {
+        "current_working_directory": os.getcwd(),
+        "model_dir_exists": False,
+        "model_dir_path": "",
+        "model_files": [],
+        "model_loading_status": {},
+        "data_file_exists": False,
+        "data_file_path": ""
+    }
+    
+    try:
+        # Check model directory
+        model_dir = Path(__file__).parent / "model" / "saved_models"
+        debug_info["model_dir_path"] = str(model_dir)
+        debug_info["model_dir_exists"] = model_dir.exists()
+        
+        if model_dir.exists():
+            debug_info["model_files"] = [f.name for f in model_dir.iterdir() if f.is_file()]
+        
+        # Check data file
+        current_file = Path(__file__).resolve()
+        project_root = current_file.parent.parent
+        data_path = project_root / "data" / "StudentsPerformance.csv"
+        debug_info["data_file_path"] = str(data_path)
+        debug_info["data_file_exists"] = data_path.exists()
+        
+        # Check model loading status
+        for score_type in ['math', 'reading', 'writing']:
+            model = predictor.models.get(score_type)
+            initial_model = predictor.initial_models.get(score_type)
+            
+            debug_info["model_loading_status"][score_type] = {
+                "full_model_fitted": hasattr(model, 'estimators_') if model else False,
+                "initial_model_fitted": hasattr(initial_model, 'estimators_') if initial_model else False,
+                "full_model_type": type(model).__name__ if model else None,
+                "initial_model_type": type(initial_model).__name__ if initial_model else None
+            }
+        
+    except Exception as e:
+        debug_info["error"] = str(e)
+    
+    return jsonify(debug_info)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
