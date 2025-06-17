@@ -52,8 +52,7 @@ const Home = () => {
           Student Score Predictor
         </h1>
         <p className="text-2xl text-white text-opacity-90 max-w-3xl mx-auto">
-          Harness the power of machine learning to predict student performance 
-          in math, reading, and writing tests.
+        Using the power of artificial intelligence and machine learning, this project predicts student test scores based on a dataset that was cleaned, transformed, and analyzed to uncover key performance trends.
         </p>
       </div>
 
@@ -88,25 +87,25 @@ const Home = () => {
             Key Features
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            Discover how our platform combines powerful machine learning with intuitive design to deliver accurate predictions and meaningful insights.
+            Discover how this project combines data science, machine learning, and modern web development to create an engaging educational tool.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto px-4">
           <FeatureCard
-            title="Machine Learning Powered"
-            description="Our advanced machine learning model analyzes multiple factors to provide accurate predictions of student performance in various subjects."
-          />
-          <FeatureCard
-            title="Data-Driven Insights"
-            description="Gain valuable insights into student performance patterns and identify areas for improvement through comprehensive data analysis."
-          />
-          <FeatureCard
-            title="Easy to Use Interface"
-            description="Simple and intuitive interface makes it easy to input student data and receive instant predictions and recommendations."
+            title="AI/ML Powered Predictions"
+            description="Demonstrates the complete machine learning lifecycle—from data preprocessing to model deployment. The project showcases the critical importance of data cleaning, feature engineering, and the iterative process of building effective predictive models."
           />
           <FeatureCard
             title="Comprehensive Analysis"
-            description="View detailed breakdowns of predictions, including confidence scores and contributing factors to better understand the results."
+            description="Leveraging advanced data analysis techniques to uncover meaningful patterns and trends within the dataset. This thorough exploration informed the data cleaning process, resulting in a robust training dataset that powers accurate predictions."
+          />
+          <FeatureCard
+            title="Interactive User Experience"
+            description="Built with React's powerful component system, the application offers an intuitive interface for testing the ML model. Users can input their own data and receive instant predictions, demostrating how to make complex machine learning accessible to everyone."
+          />
+          <FeatureCard
+            title="Modern Design Architecture"
+            description="Crafted with React, enhanced by Framer animations, and styled using Tailwind CSS to create a responsive and engaging user interface. The result is a seamless, enjoyable experience that makes interacting with machine learning models both intuitive and visually appealing."
           />
         </div>
       </div>
