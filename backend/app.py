@@ -235,10 +235,12 @@ def debug_files():
             initial_model = predictor.initial_models.get(score_type)
             
             debug_info["model_loading_status"][score_type] = {
-                "full_model_fitted": hasattr(model, 'estimators_') if model else False,
-                "initial_model_fitted": hasattr(initial_model, 'estimators_') if initial_model else False,
+                "full_model_fitted": hasattr(model, 'estimators_') and model.estimators_ is not None if model else False,
+                "initial_model_fitted": hasattr(initial_model, 'estimators_') and initial_model.estimators_ is not None if initial_model else False,
                 "full_model_type": type(model).__name__ if model else None,
-                "initial_model_type": type(initial_model).__name__ if initial_model else None
+                "initial_model_type": type(initial_model).__name__ if initial_model else None,
+                "full_model_has_estimators": hasattr(model, 'estimators_') if model else False,
+                "initial_model_has_estimators": hasattr(initial_model, 'estimators_') if initial_model else False
             }
         
     except Exception as e:

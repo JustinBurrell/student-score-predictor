@@ -5,7 +5,13 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       python train_models.py
-    startCommand: gunicorn app:app
+    startCommand: |
+      # Ensure models are trained if they don't exist
+      if [ ! -f "model/saved_models/math_score_model.joblib" ]; then
+        echo "Models not found, training them..."
+        python train_models.py
+      fi
+      gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
