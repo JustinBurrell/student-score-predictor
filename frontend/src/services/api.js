@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const API_BASE_URL = 'http://localhost:5001';
 
 /**
@@ -106,5 +108,18 @@ export const checkHealth = async () => {
   } catch (error) {
     console.error('Error checking health:', error);
     return false;
+  }
+};
+
+export const fetchPlots = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/plots`);
+    if (response.data.success) {
+      return response.data.plots;
+    }
+    throw new Error('Failed to fetch plots');
+  } catch (error) {
+    console.error('Error fetching plots:', error);
+    throw error;
   }
 }; 
