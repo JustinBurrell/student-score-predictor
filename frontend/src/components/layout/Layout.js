@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { gradients } from '../../styles/colors';
+import { motion } from 'framer-motion';
 
 const Layout = ({ children }) => {
   return (
@@ -13,9 +14,15 @@ const Layout = ({ children }) => {
       }}
     >
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <motion.main
+        className="flex-grow container mx-auto px-4 py-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.35, ease: 'easeInOut' }}
+      >
         {children}
-      </main>
+      </motion.main>
       <Footer />
     </div>
   );
