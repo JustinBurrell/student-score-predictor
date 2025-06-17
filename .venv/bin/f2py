@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/justinburrell/Desktop/Personal CS Projects/ml-predictor-app/.venv/bin/python3.12" "$0" "$@"
+'''exec' "/Users/justinburrell/Desktop/Personal CS Projects/student-score-predictor/.venv/bin/python3.12" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
