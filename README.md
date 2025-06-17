@@ -164,6 +164,10 @@ Once deployed, the app allows users to:
    - Read explanations of how each feature contributes to prediction
 
 2. **See the Model in Action**
+   - **View detailed model performance metrics** in the Analysis page, including:
+     - R² scores, MAE, RMSE, and cross-validation scores for each model
+     - Comparison between full models (with score features) vs initial models (without score features)
+     - Performance improvement statistics showing the value of feature engineering
    - Explore evaluation metrics like R², RMSE, and MAE
    - View regression plots such as actual vs. predicted scores or residuals
 
@@ -172,7 +176,7 @@ Once deployed, the app allows users to:
    - Submit the form to generate a real-time prediction
    - Display the predicted math, reading, or writing score and compare it against averages
 
-All data visualizations and metrics are displayed dynamically from the model training process and are accessible via backend API routes.
+All data visualizations and metrics are displayed dynamically from the model training process and are accessible via backend API routes. The **Analysis page** provides a comprehensive view of both model performance metrics and data analysis visualizations, allowing users to understand both the technical performance and the underlying data patterns.
 
 ---
 
