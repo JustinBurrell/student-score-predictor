@@ -201,7 +201,7 @@ All data visualizations and metrics are displayed dynamically from the model tra
 
 ### Video Demo
 
-[![Watch the demo](docs/demo/Home%20Page.png)](docs/demo/Student%20Score%20Predictor%20Demo.mov)
+[![Watch the demo](docs/demo/Home%20Page.png)]()
 
 _See the video above for a full walkthrough of the app's features and user experience._
 
