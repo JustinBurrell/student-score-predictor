@@ -201,7 +201,7 @@ All data visualizations and metrics are displayed dynamically from the model tra
 
 ### Video Demo
 
-[![Watch the demo](docs/demo/Home%20Page.png)]()
+[![Watch the demo](docs/demo/Home%20Page.png)](https://vimeo.com/1094201968/09a4abbb6d?ts=0&share=copy)
 
 _See the video above for a full walkthrough of the app's features and user experience._
 
