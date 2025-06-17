@@ -74,6 +74,25 @@ class ComprehensiveTester:
         except Exception as e:
             self.log_result("Model Metadata", False, str(e))
         
+        # Test 2.5: Model Metrics (New endpoint)
+        try:
+            response = requests.get(f"{self.base_url}/metrics")
+            if response.status_code == 200:
+                data = response.json()
+                if data['success']:
+                    self.log_result("Model Metrics", True)
+                    metrics = data['metrics']
+                    print(f"   Math Model R²: {metrics['math']['full_model']['r2_score']:.3f}")
+                    print(f"   Reading Model R²: {metrics['reading']['full_model']['r2_score']:.3f}")
+                    print(f"   Writing Model R²: {metrics['writing']['full_model']['r2_score']:.3f}")
+                    print(f"   Training Size: {data['training_size']}")
+                else:
+                    self.log_result("Model Metrics", False, data.get('error', 'Unknown error'))
+            else:
+                self.log_result("Model Metrics", False, f"HTTP {response.status_code}")
+        except Exception as e:
+            self.log_result("Model Metrics", False, str(e))
+        
         # Test 3: Feature Importance
         try:
             response = requests.get(f"{self.base_url}/model/feature-importance?score_type=math")

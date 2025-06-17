@@ -47,6 +47,9 @@ test_endpoint "1️⃣ Testing Health Check" "GET" "/health" ""
 # Test 2: Model Metadata
 test_endpoint "2️⃣ Testing Model Metadata" "GET" "/model/metadata" ""
 
+# Test 2.5: Model Metrics (New endpoint)
+test_endpoint "2️⃣5️⃣ Testing Model Metrics" "GET" "/metrics" ""
+
 # Test 3: Feature Importance (Math)
 test_endpoint "3️⃣ Testing Feature Importance (Math)" "GET" "/model/feature-importance?score_type=math" ""
 
