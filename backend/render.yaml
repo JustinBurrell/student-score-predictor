@@ -18,4 +18,4 @@ services:
       - key: FLASK_ENV
         value: production
       - key: CORS_ORIGINS
-        value: https://student-score-predictorml.vercel.app 
+        value: https://student-score-predictorml.vercel.app

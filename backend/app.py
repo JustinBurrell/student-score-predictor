@@ -16,11 +16,27 @@ app = Flask(__name__)
 
 # Enable CORS for all routes
 CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000').split(',')
+# Clean up any whitespace from the origins
+CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS if origin.strip()]
+
+# Add common development and production origins
+ADDITIONAL_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://student-score-predictorml.vercel.app',
+    'https://student-score-predictor.vercel.app'
+]
+
+# Combine and deduplicate origins
+ALL_ORIGINS = list(set(CORS_ORIGINS + ADDITIONAL_ORIGINS))
+print(f"CORS Origins configured: {ALL_ORIGINS}")
+
 CORS(app, resources={
     r"/*": {
-        "origins": CORS_ORIGINS,
+        "origins": ALL_ORIGINS,
         "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
     }
 })
 
@@ -54,8 +70,18 @@ def health_check():
     return jsonify({
         "status": "healthy",
         "message": "Service is running",
-        "model_version": predictor.VERSION
+        "model_version": predictor.VERSION,
+        "cors_origins": ALL_ORIGINS
     })
+
+@app.route('/health', methods=['OPTIONS'])
+def health_check_options():
+    """Handle CORS preflight for health check"""
+    response = jsonify({"status": "ok"})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
 
 @app.route('/model/metadata', methods=['GET'])
 def get_model_metadata():
