@@ -23,9 +23,17 @@ class DataProcessor:
         # Load and fit preprocessors with training data
         self._fit_preprocessors()
     
-    def _fit_preprocessors(self, data_path="../data/StudentsPerformance.csv"):
+    def _fit_preprocessors(self, data_file="StudentsPerformance.csv"):
         """Fit the preprocessors with training data"""
         try:
+            # Get the absolute path to the data file
+            current_file = Path(__file__).resolve()
+            project_root = current_file.parent.parent.parent
+            data_path = project_root / "data" / data_file
+            
+            if not data_path.exists():
+                raise FileNotFoundError(f"Data file not found at {data_path}")
+            
             df = pd.read_csv(data_path)
             
             # Fit OneHotEncoder
@@ -39,6 +47,7 @@ class DataProcessor:
             
         except Exception as e:
             print(f"Warning: Could not fit preprocessors with training data: {e}")
+            raise  # Re-raise the exception to handle it in the calling code
     
     def preprocess(self, input_data, exclude_score='math', include_scores=True):
         """

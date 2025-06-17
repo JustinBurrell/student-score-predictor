@@ -339,29 +339,34 @@ class ScorePredictor:
             
             # Get and scale other scores for polynomial features
             other_scores = [s for s in self.VALID_SCORE_TYPES if s != score_type]
-            score_values = np.array([[features[f'{s}_score'].iloc[0] for s in other_scores]])
-            scaled_scores = self.score_scaler.transform(score_values)
+            score_values = np.array([[features[f'{s}_score_scaled'].iloc[0] for s in other_scores]])
             
             # Create polynomial features from scaled scores
-            poly_features = self.poly.transform(scaled_scores)
+            poly_features = self.poly.transform(score_values)
             
             # Add polynomial features to the feature set
+            features_copy = features.copy()
             for i in range(poly_features.shape[1]):
-                features[f'poly_{i}'] = poly_features[0, i]
+                features_copy[f'poly_{i}'] = poly_features[0, i]
             
-            predictions = self.models[score_type].predict(features)
+            predictions = self.models[score_type].predict(features_copy)
             
             # Get confidence intervals using tree variance
-            trees_predictions = np.array([tree.predict(features) 
+            trees_predictions = np.array([tree.predict(features_copy) 
                                        for tree in self.models[score_type].estimators_])
             confidence_interval = np.percentile(trees_predictions, [2.5, 97.5], axis=0)
             
-            prediction = self._adjust_prediction(predictions[0], score_type, 
-                                              {s: features[f'{s}_score'].iloc[0] for s in other_scores})
-            ci_lower = self._adjust_prediction(confidence_interval[0][0], score_type,
-                                            {s: features[f'{s}_score'].iloc[0] for s in other_scores})
-            ci_upper = self._adjust_prediction(confidence_interval[1][0], score_type,
-                                            {s: features[f'{s}_score'].iloc[0] for s in other_scores})
+            # Get original scores for adjustment
+            other_scores_dict = {}
+            for s in other_scores:
+                score_scaled = features[f'{s}_score_scaled'].iloc[0]
+                # Inverse transform to get original score
+                original_score = score_scaled * (self.score_ranges[s]['max'] - self.score_ranges[s]['min']) + self.score_ranges[s]['min']
+                other_scores_dict[s] = original_score
+            
+            prediction = self._adjust_prediction(predictions[0], score_type, other_scores_dict)
+            ci_lower = self._adjust_prediction(confidence_interval[0][0], score_type, other_scores_dict)
+            ci_upper = self._adjust_prediction(confidence_interval[1][0], score_type, other_scores_dict)
             
             return {
                 'prediction': prediction,
