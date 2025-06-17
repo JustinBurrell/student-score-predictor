@@ -1,8 +1,49 @@
-# Math Score Predictor Backend
+# Student Score Predictor Backend
 
 A Flask-based machine learning service that predicts student academic scores using Random Forest models with advanced feature engineering, confidence intervals, and model interpretability features.
 
-## Machine Learning Implementation
+---
+
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Technologies Used](#technologies-used)
+- [Features](#features)
+- [Machine Learning Implementation](#machine-learning-implementation)
+- [Deployment Setup](#deployment-setup)
+- [API Endpoints](#api-endpoints)
+- [Input Features](#input-features)
+- [Testing & Troubleshooting](#testing--troubleshooting)
+
+---
+
+## Project Overview
+
+This backend provides a robust REST API for predicting student math, reading, and writing scores based on demographic and educational features. It is designed for integration with a modern React frontend and supports advanced ML features, model retraining, and interpretability.
+
+---
+
+## Technologies Used
+
+| Layer        | Tools & Frameworks                        |
+|--------------|-------------------------------------------|
+| Backend      | Flask, Flask-CORS, scikit-learn, pandas   |
+| ML Modeling  | Jupyter Notebook, matplotlib, seaborn     |
+| Deployment   | Render                                    |
+| Version Ctrl | Git, GitHub                               |
+
+---
+
+## Features
+- REST API for predictions, model metadata, and feature importance
+- Three separate Random Forest models (math, reading, writing)
+- Confidence intervals for predictions
+- Model retraining endpoint
+- Automated test suite and troubleshooting scripts
+- CORS support for secure frontend-backend integration
+
+---
+
+## 📦 Machine Learning Implementation
 
 ### Model Architecture
 - **Algorithm**: Random Forest Regressor with optimized hyperparameters
@@ -16,64 +57,45 @@ A Flask-based machine learning service that predicts student academic scores usi
 - **Model Versioning**: Semantic versioning (current: 1.0.0)
 - **Performance Tracking**: Automated metrics collection and storage
 
-### Model Performance
+### Model Training
+- **Script:** `train_models.py` — Run this script to retrain all models or individual models with updated data or parameters.
+- **Usage:**
+  ```bash
+  cd backend
+  source ../.venv/bin/activate
+  python train_models.py
+  ```
+- See the script for options and documentation.
 
-1. **Writing Score Model**
-   - Accuracy: 92.9% (±0.66%)
-   - Key Features:
-     - Reading score and polynomials (32%)
-     - Math score and polynomials (20%)
-     - Average scores (7.9%)
-   - Best Parameters:
-     ```python
-     {
-         'max_depth': 20,
-         'max_features': 'sqrt',
-         'min_samples_leaf': 2,
-         'min_samples_split': 5,
-         'n_estimators': 300
-     }
-     ```
+---
 
-2. **Reading Score Model**
-   - Accuracy: 91.3% (±0.70%)
-   - Key Features:
-     - Writing score relationships (74.7%)
-     - Score polynomials (21%)
-   - Best Parameters:
-     ```python
-     {
-         'max_depth': 10,
-         'max_features': null,
-         'min_samples_leaf': 4,
-         'min_samples_split': 10,
-         'n_estimators': 300
-     }
-     ```
+## 🚀 Deployment Setup
 
-3. **Math Score Model**
-   - Accuracy: 84.0% (±1.96%)
-   - Key Features:
-     - Reading/writing polynomials (54%)
-     - Gender (12%)
-     - Raw scores (5%)
-   - Best Parameters:
-     ```python
-     {
-         'max_depth': 10,
-         'max_features': null,
-         'min_samples_leaf': 2,
-         'min_samples_split': 2,
-         'n_estimators': 300
-     }
-     ```
+### Local Development
+1. Create virtual environment:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # Unix
+   .venv\Scripts\activate     # Windows
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the server:
+   ```bash
+   python app.py
+   ```
+   Server will start on port 5001 (http://localhost:5001)
 
-### Key Findings
-1. Writing and reading scores show strong interdependence
-2. Math scores are more influenced by demographic factors
-3. Test preparation impact varies by subject
-4. Polynomial features significantly improve prediction accuracy
-5. Gender has more impact on math scores than other subjects
+### Production Deployment
+- Set environment variables for CORS and API base URL in your deployment platform (e.g., Render):
+  - `CORS_ORIGINS` — Comma-separated list of allowed frontend origins (e.g., your Vercel frontend URL)
+  - `API_BASE_URL` — The public URL of your backend API
+- For troubleshooting deployment, see [backend_troubleshooting.md](test_scripts/backend_troubleshooting.md)
+- For advanced testing and CI/CD, see [testingdocumentation.md](test_scripts/testingdocumentation.md)
+
+---
 
 ## API Endpoints
 
@@ -118,7 +140,7 @@ curl -X POST http://localhost:5001/predict/math \
   -d '{
     "gender": "female",
     "race/ethnicity": "group C",
-    "parental level of education": "bachelor'\''s degree",
+    "parental level of education": "bachelor's degree",
     "lunch": "standard",
     "test preparation course": "completed",
     "reading score": 75,
@@ -145,7 +167,7 @@ curl -X POST http://localhost:5001/predict/all \
   -d '{
     "gender": "female",
     "race/ethnicity": "group C",
-    "parental level of education": "bachelor'\''s degree",
+    "parental level of education": "bachelor's degree",
     "lunch": "standard",
     "test preparation course": "completed"
   }'
@@ -161,6 +183,8 @@ curl -X POST http://localhost:5001/model/retrain
 curl -X POST "http://localhost:5001/model/retrain?score_type=math"
 ```
 
+---
+
 ## Input Features
 
 1. **Categorical Features**:
@@ -175,66 +199,13 @@ curl -X POST "http://localhost:5001/model/retrain?score_type=math"
    - `reading score`: 0-100
    - `writing score`: 0-100
 
-## Development Setup
+---
 
-1. Create virtual environment:
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Unix
-.venv\Scripts\activate     # Windows
-```
+## 🧪 Testing & Troubleshooting
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Run the server:
-```bash
-python app.py
-```
-
-Server will start on port 5001 (http://localhost:5001) 
-
-## Performance Optimizations
-
-1. **Prediction Caching**:
-   - LRU cache for frequent prediction patterns
-   - Cache size: 1000 entries
-   - Automatic cache invalidation on model retraining
-   - Average response time: 0.419 seconds under load
-
-2. **Feature Importance Analysis**:
-   - Separate tracking for initial and full models
-   - Detailed importance rankings for all features
-   - Interaction terms analysis
-   - Real-time feature importance endpoint
-
-3. **Confidence Intervals**:
-   - 95% confidence bounds for all predictions
-   - Based on Random Forest tree variance
-   - Adjusted for score constraints and correlations
-
-## Testing Suite
-
-1. **Edge Case Testing**:
-   - Extreme value combinations (0-100 score ranges)
-   - Unusual feature combinations (e.g., high education with free lunch)
-   - Score correlation constraints
-   - Boundary condition handling
-
-2. **Load Testing**:
-   - Concurrent request handling (50+ simultaneous requests)
-   - Response time metrics:
-     - Average: 0.419 seconds
-     - Maximum: 0.594 seconds
-     - Minimum: 0.262 seconds
-   - Memory usage monitoring
-   - Cache performance tracking
-
-3. **Integration Testing**:
-   - API endpoint validation
-   - Data preprocessing verification
-   - Model prediction consistency
-   - Error handling and recovery
-   - Cross-score prediction validation 
+- **Testing:**
+  - See [testingdocumentation.md](test_scripts/testingdocumentation.md) for a full guide to running, customizing, and interpreting backend tests.
+  - Use `run_tests.sh` for comprehensive test runs, including local and production API checks.
+- **Troubleshooting:**
+  - See [backend_troubleshooting.md](test_scripts/backend_troubleshooting.md) for virtual environment issues, deployment errors, and recovery workflows.
+  - Includes quick commands, common error explanations, and advanced recovery steps.
