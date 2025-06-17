@@ -82,4 +82,8 @@ curl -s -X POST "$BASE_URL/predict/invalid" \
     "race_ethnicity": "group A"
   }' | jq '.'
 
+# Test 9: List Available Plots
+echo -e "\n9️⃣ Testing List Available Plots..."
+curl -s -X GET "$BASE_URL/api/plots" | jq '.'
+
 echo -e "\n✅ API Testing Complete!" 

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from model.predictor import ScorePredictor
 from utils.data_processor import DataProcessor
@@ -187,6 +187,17 @@ def retrain_model():
             "success": False,
             "error": str(e)
         }), 500
+
+@app.route('/api/plots', methods=['GET'])
+def list_plots():
+    """List all available plot images in static/plots/ as URLs"""
+    plots_dir = os.path.join(app.root_path, 'static', 'plots')
+    if not os.path.exists(plots_dir):
+        return jsonify({"success": True, "plots": []})
+    files = [f for f in os.listdir(plots_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.svg'))]
+    # Return URLs relative to /static/plots/
+    plot_urls = [f"/static/plots/{fname}" for fname in files]
+    return jsonify({"success": True, "plots": plot_urls})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
