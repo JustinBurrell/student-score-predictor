@@ -430,7 +430,7 @@ const About = () => {
                 className="flex-shrink-0 mt-2 sm:mt-4 md:mt-0"
               >
                 <img 
-                  src="public/images/Justin Burrell.JPG" 
+                  src="/images/Justin Burrell.JPG" 
                   alt="Justin Burrell" 
                   className="w-24 h-32 sm:w-32 sm:h-44 md:w-40 md:h-56 lg:w-48 lg:h-64 object-cover rounded-2xl shadow-lg border border-gray-200" 
                 />
