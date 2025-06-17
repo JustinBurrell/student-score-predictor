@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ApiProvider } from './context/ApiContext';
 import Layout from './components/layout/Layout';
@@ -9,6 +9,17 @@ import Home from './pages/Home';
 import Prediction from './pages/Prediction';
 import Analysis from './pages/Analysis';
 import About from './pages/About';
+
+// ScrollToTop component to handle scroll restoration
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -76,6 +87,7 @@ function App() {
   return (
     <Router>
       <ApiProvider>
+        <ScrollToTop />
         <Layout>
           <AnimatedRoutes />
         </Layout>
