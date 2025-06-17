@@ -2,11 +2,11 @@ import React from 'react';
 
 const About = () => {
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
+    <div className="flex flex-col items-center pt-16">
+      <h1 className="text-5xl font-bold text-white mb-8">
         About the Project
       </h1>
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-lg p-6 max-w-5xl w-full">
         <div className="space-y-8">
           <section>
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
