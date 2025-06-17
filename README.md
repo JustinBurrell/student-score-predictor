@@ -53,7 +53,7 @@ _Data source: [Kaggle - Students Performance in Exams](https://www.kaggle.com/da
 - `parental level of education`
 - `lunch` (standard or free/reduced)
 - `test preparation course`
-- `math score` (target)
+- `math score`
 - `reading score`
 - `writing score`
 
