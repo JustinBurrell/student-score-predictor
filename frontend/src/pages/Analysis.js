@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { fetchPlots } from '../services/api';
+import { fetchPlots, getModelMetrics } from '../services/api';
 
 const Analysis = () => {
   const [plots, setPlots] = useState([]);
+  const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadPlots = async () => {
+    const loadData = async () => {
       try {
-        const plotUrls = await fetchPlots();
+        const [plotUrls, metricsData] = await Promise.all([
+          fetchPlots(),
+          getModelMetrics()
+        ]);
         setPlots(plotUrls);
+        setMetrics(metricsData);
         setLoading(false);
       } catch (err) {
-        setError('Failed to load analysis plots');
+        setError('Failed to load analysis data');
         setLoading(false);
       }
     };
 
-    loadPlots();
+    loadData();
   }, []);
 
   // Animation variants
@@ -94,6 +99,77 @@ const Analysis = () => {
       >
         Data Analysis & Insights
       </motion.h1>
+
+      {/* Model Metrics Section */}
+      {metrics && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-lg shadow-lg p-6 mb-8"
+        >
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Model Performance Metrics</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {Object.entries(metrics.metrics).map(([scoreType, scoreMetrics]) => (
+              <div key={scoreType} className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-3 text-gray-700 capitalize">
+                  {scoreType} Score Model
+                </h3>
+                
+                {/* Full Model Metrics */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-600 mb-2">Full Model (with score features)</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>R² Score:</span>
+                      <span className="font-medium text-green-600">{(scoreMetrics.full_model.r2_score * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>MAE:</span>
+                      <span className="font-medium">{scoreMetrics.full_model.mae}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>RMSE:</span>
+                      <span className="font-medium">{scoreMetrics.full_model.rmse}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>CV Score:</span>
+                      <span className="font-medium text-blue-600">{(scoreMetrics.full_model.cv_score_mean * 100).toFixed(1)}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Initial Model Metrics */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-600 mb-2">Initial Model (without score features)</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>R² Score:</span>
+                      <span className="font-medium text-green-600">{(scoreMetrics.initial_model.r2_score * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>MAE:</span>
+                      <span className="font-medium">{scoreMetrics.initial_model.mae}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>RMSE:</span>
+                      <span className="font-medium">{scoreMetrics.initial_model.rmse}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>CV Score:</span>
+                      <span className="font-medium text-blue-600">{(scoreMetrics.initial_model.cv_score_mean * 100).toFixed(1)}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-4 text-sm text-gray-600">
+            <p><strong>Training Data Size:</strong> {metrics.training_size} samples</p>
+            <p><strong>Last Updated:</strong> {new Date(metrics.last_updated).toLocaleDateString()}</p>
+          </div>
+        </motion.div>
+      )}
 
       <motion.div
         variants={containerVariants}

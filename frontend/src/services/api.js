@@ -75,6 +75,24 @@ export const getModelMetadata = async () => {
 };
 
 /**
+ * Gets model performance metrics specifically
+ * @returns {Promise} - Model metrics data
+ */
+export const getModelMetrics = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/metrics`);
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch model metrics');
+    }
+    return data;
+  } catch (error) {
+    console.error('Error fetching model metrics:', error);
+    throw error;
+  }
+};
+
+/**
  * Gets feature importance for a specific score type or all scores
  * @param {string} [scoreType] - Optional score type ('math', 'reading', 'writing')
  * @returns {Promise} - Feature importance data

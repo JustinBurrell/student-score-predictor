@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.preprocessing import PolynomialFeatures, MinMaxScaler
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from pathlib import Path
 import datetime
 import json
@@ -229,6 +230,18 @@ class ScorePredictor:
                 scoring='r2'
             )
             
+            # Calculate additional metrics for both models
+            y_pred_initial = self.initial_models[score_type].predict(X_initial)
+            y_pred_full = self.models[score_type].predict(X)
+            
+            mae_initial = mean_absolute_error(y, y_pred_initial)
+            rmse_initial = np.sqrt(mean_squared_error(y, y_pred_initial))
+            r2_initial = r2_score(y, y_pred_initial)
+            
+            mae_full = mean_absolute_error(y, y_pred_full)
+            rmse_full = np.sqrt(mean_squared_error(y, y_pred_full))
+            r2_full = r2_score(y, y_pred_full)
+            
             # Get feature importance for both models
             feature_importance_initial = dict(zip(X_initial.columns, 
                                                self.initial_models[score_type].feature_importances_))
@@ -239,14 +252,18 @@ class ScorePredictor:
             # Update metadata with model metrics and feature importance
             self.metadata['model_metrics'][score_type] = {
                 'initial_model': {
-                    'r2_score': grid_search_initial.best_score_,
+                    'r2_score': r2_initial,
+                    'mae': mae_initial,
+                    'rmse': rmse_initial,
                     'cv_scores': {
                         'mean': cv_scores_initial.mean(),
                         'std': cv_scores_initial.std()
                     }
                 },
                 'full_model': {
-                    'r2_score': grid_search.best_score_,
+                    'r2_score': r2_full,
+                    'mae': mae_full,
+                    'rmse': rmse_full,
                     'cv_scores': {
                         'mean': cv_scores.mean(),
                         'std': cv_scores.std()
@@ -266,6 +283,9 @@ class ScorePredictor:
                 "initial_model": {
                     "best_params": grid_search_initial.best_params_,
                     "best_score": grid_search_initial.best_score_,
+                    "r2_score": r2_initial,
+                    "mae": mae_initial,
+                    "rmse": rmse_initial,
                     "cv_scores": {
                         "mean": cv_scores_initial.mean(),
                         "std": cv_scores_initial.std(),
@@ -280,6 +300,9 @@ class ScorePredictor:
                 "full_model": {
                     "best_params": grid_search.best_params_,
                     "best_score": grid_search.best_score_,
+                    "r2_score": r2_full,
+                    "mae": mae_full,
+                    "rmse": rmse_full,
                     "cv_scores": {
                         "mean": cv_scores.mean(),
                         "std": cv_scores.std(),

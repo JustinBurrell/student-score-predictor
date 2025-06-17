@@ -72,6 +72,45 @@ def get_model_metadata():
             "error": str(e)
         }), 500
 
+@app.route('/metrics', methods=['GET'])
+def get_model_metrics():
+    """Get model performance metrics specifically"""
+    try:
+        metadata = predictor.get_metadata()
+        metrics = metadata.get('model_metrics', {})
+        
+        # Format metrics for easier consumption
+        formatted_metrics = {}
+        for score_type, score_metrics in metrics.items():
+            formatted_metrics[score_type] = {
+                'initial_model': {
+                    'r2_score': round(score_metrics['initial_model']['r2_score'], 4),
+                    'mae': round(score_metrics['initial_model']['mae'], 2),
+                    'rmse': round(score_metrics['initial_model']['rmse'], 2),
+                    'cv_score_mean': round(score_metrics['initial_model']['cv_scores']['mean'], 4),
+                    'cv_score_std': round(score_metrics['initial_model']['cv_scores']['std'], 4)
+                },
+                'full_model': {
+                    'r2_score': round(score_metrics['full_model']['r2_score'], 4),
+                    'mae': round(score_metrics['full_model']['mae'], 2),
+                    'rmse': round(score_metrics['full_model']['rmse'], 2),
+                    'cv_score_mean': round(score_metrics['full_model']['cv_scores']['mean'], 4),
+                    'cv_score_std': round(score_metrics['full_model']['cv_scores']['std'], 4)
+                }
+            }
+        
+        return jsonify({
+            "success": True,
+            "metrics": formatted_metrics,
+            "last_updated": metadata.get('last_training_date'),
+            "training_size": metadata.get('training_size')
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 @app.route('/model/feature-importance', methods=['GET'])
 def get_feature_importance():
     """Get feature importance for all or specific score type"""
