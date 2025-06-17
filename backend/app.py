@@ -195,9 +195,13 @@ def list_plots():
     plots_dir = os.path.join(app.root_path, 'static', 'plots')
     if not os.path.exists(plots_dir):
         return jsonify({"success": True, "plots": []})
+    
+    # Get the base URL from environment or default to localhost
+    base_url = os.getenv('API_BASE_URL', 'http://localhost:5001')
+    
     files = [f for f in os.listdir(plots_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.svg'))]
-    # Return URLs relative to /static/plots/
-    plot_urls = [f"/static/plots/{fname}" for fname in files]
+    # Return full URLs including the base URL
+    plot_urls = [f"{base_url}/static/plots/{fname}" for fname in files]
     return jsonify({"success": True, "plots": plot_urls})
 
 @app.route('/debug/files', methods=['GET'])
