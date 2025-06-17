@@ -14,7 +14,8 @@ import {
   FaChartLine,
   FaChartPie,
   FaCog,
-  FaLinkedin
+  FaLinkedin,
+  FaEnvelope
 } from 'react-icons/fa';
 import { 
   SiTailwindcss, 
@@ -301,6 +302,12 @@ const About = () => {
                     className="text-blue-600 hover:text-blue-800 font-semibold flex items-center justify-center"
                   >
                     <FaLinkedin className="w-7 h-7" />
+                  </a>
+                  <a
+                    href="mailto:justinburrell715@gmail.com"
+                    className="text-blue-600 hover:text-blue-800 font-semibold flex items-center justify-center"
+                  >
+                    <FaEnvelope className="w-7 h-7" />
                   </a>
                 </div>
               </div>
