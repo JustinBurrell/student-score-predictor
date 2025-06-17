@@ -184,15 +184,26 @@ All data visualizations and metrics are displayed dynamically from the model tra
 
 ### Screenshots
 
-![App Home Page](docs/screenshots/homepage_placeholder.png)
-![Prediction Form](docs/screenshots/prediction_placeholder.png)
-![Analysis Plots](docs/screenshots/analysis_placeholder.png)
+#### Home Page
+![Home Page](docs/demo/Home%20Page.png)
+
+#### Prediction Form & Result
+![Prediction Visual](docs/demo/Prediction%20Visual.png)
+
+#### Data Analysis
+![Data Analysis](docs/demo/Data%20Analysis.png)
+
+#### Model Performance Metrics
+![Performance Metrics](docs/demo/Performance%20Metrics.png)
+
+#### Detailed About Page
+![About Page](docs/demo/About%20Page.png)
 
 ### Video Demo
 
-[![Watch the demo](docs/screenshots/video_placeholder.png)](https://your-demo-video-link.com)
+[![Watch the demo](docs/demo/Home%20Page.png)](docs/demo/Student%20Score%20Predictor%20Demo.mov)
 
-_Placeholder: Replace with actual screenshots and video links as needed._
+_See the video above for a full walkthrough of the app's features and user experience._
 
 ---
 
