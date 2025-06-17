@@ -113,13 +113,32 @@ const About = () => {
                 > Kaggle
                 </a>, which offered clean, structured data ideal for a beginner-friendly regression task. From there, I began exploring how to preprocess data with pandas, visualize trends with matplotlib, train and evaluate models with scikit-learn, and ultimately build a full-stack application using Flask and React. Beyond strengthening my technical skills, this project reinforced my interest in ML and demonstrated how accessible and powerful predictive modeling can be when paired with the right tools.
               </motion.p>
+              <motion.div
+                variants={fadeInUp(0.8)}
+                initial="hidden"
+                animate={isLoaded ? "visible" : "hidden"}
+                exit="exit"
+                className="text-gray-600 text-sm sm:text-base"
+              >
+                <br />
+                To learn more about this project in detail, please refer to my{' '}
+                <a 
+                  href="https://github.com/JustinBurrell/student-score-predictor?tab=readme-ov-file#readme" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ color: '#0096C7', fontWeight: 'bold' }}
+                >
+                  project documentation
+                </a>
+                {' '}on Github.
+              </motion.div>
             </div>
           </section>
 
           {/* Tech Stack Section */}
           <section>
             <motion.h2
-              variants={fadeInUp(0.8)}
+              variants={fadeInUp(1.0)}
               initial="hidden"
               animate={isLoaded ? "visible" : "hidden"}
               exit="exit"
@@ -128,7 +147,7 @@ const About = () => {
               Tech Stack
             </motion.h2>
             <motion.div
-              variants={fadeInUp(1.0)}
+              variants={fadeInUp(1.2)}
               initial="hidden"
               animate={isLoaded ? "visible" : "hidden"}
               exit="exit"
@@ -140,7 +159,7 @@ const About = () => {
             </motion.div>
             <div className="space-y-8 w-full">
               <motion.div
-                variants={slideLeft(1.2)}
+                variants={slideLeft(1.4)}
                 initial="hidden"
                 animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
@@ -196,7 +215,7 @@ const About = () => {
                 </div>
               </motion.div>
               <motion.div
-                variants={slideRight(1.4)}
+                variants={slideRight(1.6)}
                 initial="hidden"
                 animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
@@ -243,7 +262,7 @@ const About = () => {
                 </div>
               </motion.div>
               <motion.div
-                variants={slideLeft(1.6)}
+                variants={slideLeft(1.8)}
                 initial="hidden"
                 animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
@@ -296,7 +315,7 @@ const About = () => {
                 </div>
               </motion.div>
               <motion.div
-                variants={slideRight(1.8)}
+                variants={slideRight(2.0)}
                 initial="hidden"
                 animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
@@ -351,7 +370,7 @@ const About = () => {
           {/* About Me Section */}
           <section>
             <motion.h2
-              variants={fadeInUp(2.0)}
+              variants={fadeInUp(2.2)}
               initial="hidden"
               animate={isLoaded ? "visible" : "hidden"}
               exit="exit"
@@ -364,7 +383,7 @@ const About = () => {
               <div className="flex-1 flex flex-col items-start w-full">
                 <div className="prose max-w-none mb-2 sm:mb-4 md:mb-6">
                   <motion.p
-                    variants={fadeInUp(2.2)}
+                    variants={fadeInUp(2.4)}
                     initial="hidden"
                     animate={isLoaded ? "visible" : "hidden"}
                     exit="exit"
@@ -373,7 +392,7 @@ const About = () => {
                     Hey! I'm Justin Burrell, a rising senior majoring in Computer Science and Engineering student at Lehigh University, with a passion for building equitable, scalable solutions that help people and create meaningful impact. My experience spans tech consulting, full stack engineering, and business strategy, allowing me to approach problems from both a technical and strategic lens. I've also held multiple leadership roles in student organizations, where I've focused on advocacy, inclusion, and empowering underrepresented communities in tech.
                   </motion.p>
                   <motion.p
-                    variants={fadeInUp(2.4)}
+                    variants={fadeInUp(2.6)}
                     initial="hidden"
                     animate={isLoaded ? "visible" : "hidden"}
                     exit="exit"
@@ -383,7 +402,7 @@ const About = () => {
                   </motion.p>
                 </div>
                 <motion.div
-                  variants={fadeInUp(2.6)}
+                  variants={fadeInUp(2.8)}
                   initial="hidden"
                   animate={isLoaded ? "visible" : "hidden"}
                   exit="exit"
@@ -423,7 +442,7 @@ const About = () => {
               </div>
               {/* Right Side: Image */}
               <motion.div
-                variants={fadeInUp(2.5)}
+                variants={fadeInUp(2.7)}
                 initial="hidden"
                 animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
