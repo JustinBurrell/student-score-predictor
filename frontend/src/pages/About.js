@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaReact, 
@@ -35,6 +35,16 @@ import {
 } from 'react-icons/md';
 
 const About = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Small delay to ensure page transition animation completes
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Animation variants
   const fadeInUp = (delay = 0) => ({
     hidden: { opacity: 0, y: 40 },
@@ -58,7 +68,7 @@ const About = () => {
       <motion.h1
         variants={fadeInUp(0)}
         initial="hidden"
-        animate="visible"
+        animate={isLoaded ? "visible" : "hidden"}
         exit="exit"
         className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-8 text-center"
       >
@@ -71,7 +81,7 @@ const About = () => {
             <motion.h2
               variants={fadeInUp(0.2)}
               initial="hidden"
-              animate="visible"
+              animate={isLoaded ? "visible" : "hidden"}
               exit="exit"
               className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-2 sm:mb-4 text-left"
             >
@@ -81,7 +91,7 @@ const About = () => {
               <motion.p
                 variants={fadeInUp(0.4)}
                 initial="hidden"
-                animate="visible"
+                animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
                 className="text-sm sm:text-base text-gray-600 mb-2 sm:mb-6"
               >
@@ -90,7 +100,7 @@ const About = () => {
               <motion.p
                 variants={fadeInUp(0.6)}
                 initial="hidden"
-                animate="visible"
+                animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
                 className="text-sm sm:text-base text-gray-600 mt-2 sm:mt-6"
               >
@@ -111,7 +121,7 @@ const About = () => {
             <motion.h2
               variants={fadeInUp(0.8)}
               initial="hidden"
-              animate="visible"
+              animate={isLoaded ? "visible" : "hidden"}
               exit="exit"
               className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-2 sm:mb-4 text-left"
             >
@@ -120,7 +130,7 @@ const About = () => {
             <motion.div
               variants={fadeInUp(1.0)}
               initial="hidden"
-              animate="visible"
+              animate={isLoaded ? "visible" : "hidden"}
               exit="exit"
               className="prose max-w-none mb-4 sm:mb-6"
             >
@@ -132,7 +142,7 @@ const About = () => {
               <motion.div
                 variants={slideLeft(1.2)}
                 initial="hidden"
-                animate="visible"
+                animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
               >
                 {/* Frontend row (slide in left) */}
@@ -188,7 +198,7 @@ const About = () => {
               <motion.div
                 variants={slideRight(1.4)}
                 initial="hidden"
-                animate="visible"
+                animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
               >
                 {/* Backend row (slide in right) */}
@@ -235,7 +245,7 @@ const About = () => {
               <motion.div
                 variants={slideLeft(1.6)}
                 initial="hidden"
-                animate="visible"
+                animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
               >
                 {/* Data Analysis row (slide in left) */}
@@ -288,7 +298,7 @@ const About = () => {
               <motion.div
                 variants={slideRight(1.8)}
                 initial="hidden"
-                animate="visible"
+                animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
               >
                 {/* ML Modeling row (slide in right) */}
@@ -343,7 +353,7 @@ const About = () => {
             <motion.h2
               variants={fadeInUp(2.0)}
               initial="hidden"
-              animate="visible"
+              animate={isLoaded ? "visible" : "hidden"}
               exit="exit"
               className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-2 sm:mb-4 text-left"
             >
@@ -356,7 +366,7 @@ const About = () => {
                   <motion.p
                     variants={fadeInUp(2.2)}
                     initial="hidden"
-                    animate="visible"
+                    animate={isLoaded ? "visible" : "hidden"}
                     exit="exit"
                     className="text-xs sm:text-sm md:text-base text-gray-600 mb-1 sm:mb-2 md:mb-6"
                   >
@@ -365,7 +375,7 @@ const About = () => {
                   <motion.p
                     variants={fadeInUp(2.4)}
                     initial="hidden"
-                    animate="visible"
+                    animate={isLoaded ? "visible" : "hidden"}
                     exit="exit"
                     className="text-xs sm:text-sm md:text-base text-gray-600 mt-1 sm:mt-2 md:mt-6"
                   >
@@ -375,7 +385,7 @@ const About = () => {
                 <motion.div
                   variants={fadeInUp(2.6)}
                   initial="hidden"
-                  animate="visible"
+                  animate={isLoaded ? "visible" : "hidden"}
                   exit="exit"
                   className="mt-2 flex justify-center w-full space-x-2 sm:space-x-4 md:space-x-6"
                 >
@@ -415,7 +425,7 @@ const About = () => {
               <motion.div
                 variants={fadeInUp(2.5)}
                 initial="hidden"
-                animate="visible"
+                animate={isLoaded ? "visible" : "hidden"}
                 exit="exit"
                 className="flex-shrink-0 mt-2 sm:mt-4 md:mt-0"
               >
