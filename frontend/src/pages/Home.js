@@ -7,26 +7,22 @@ import { FaRobot, FaChartBar, FaLaptopCode } from 'react-icons/fa';
 const Card = ({ to, title, description, icon: Icon }) => (
   <Link
     to={to}
-    className="transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+    className="transform transition-all duration-300 hover:scale-105 hover:shadow-xl rounded-xl overflow-hidden relative flex flex-col h-full"
+    style={{
+      background: gradients.card,
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+    }}
   >
-    <div 
-      className="rounded-xl overflow-hidden relative flex flex-col h-full"
-      style={{
-        background: gradients.card,
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-      }}
-    >
-      <div className="p-6 flex-grow">
-        <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-        <p className="text-white text-opacity-90 leading-relaxed">{description}</p>
-      </div>
-      {Icon && (
-        <div className="w-full flex justify-center pb-6 opacity-20">
-          <Icon size={48} className="text-white" />
-        </div>
-      )}
+    <div className="p-6 flex-grow">
+      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
+      <p className="text-white text-opacity-90 leading-relaxed">{description}</p>
     </div>
+    {Icon && (
+      <div className="w-full flex justify-center pb-6 opacity-20">
+        <Icon size={48} className="text-white" />
+      </div>
+    )}
   </Link>
 );
 
