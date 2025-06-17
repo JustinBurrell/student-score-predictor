@@ -12,7 +12,7 @@ class ScorePredictor:
     VALID_SCORE_TYPES = ['math', 'reading', 'writing']
     VERSION = "1.0.0"  # Semantic versioning
     
-    def __init__(self, data_path="../data/StudentsPerformance.csv"):
+    def __init__(self, data_path=None):
         self.models = {}
         self.initial_models = {}  # Models for initial predictions without scores
         self.model_dir = Path(__file__).parent / "saved_models"
@@ -39,6 +39,13 @@ class ScorePredictor:
         
         # Load metadata if exists
         self._load_metadata()
+        
+        # Determine data path - use absolute path for production
+        if data_path is None:
+            # Get the absolute path to the data file
+            current_file = Path(__file__).resolve()
+            project_root = current_file.parent.parent.parent
+            data_path = project_root / "data" / "StudentsPerformance.csv"
         
         # Fit score scaler and polynomial features with sample data
         try:
@@ -114,13 +121,20 @@ class ScorePredictor:
             else:
                 self.initial_models[score_type] = RandomForestRegressor()
     
-    def train(self, score_type, data_path="../data/StudentsPerformance.csv"):
+    def train(self, score_type, data_path=None):
         """Train a specific score prediction model with hyperparameter tuning"""
         if score_type not in self.VALID_SCORE_TYPES:
             raise ValueError(f"Invalid score type. Must be one of {self.VALID_SCORE_TYPES}")
             
         try:
             from utils.data_processor import DataProcessor
+            
+            # Determine data path - use absolute path for production
+            if data_path is None:
+                # Get the absolute path to the data file
+                current_file = Path(__file__).resolve()
+                project_root = current_file.parent.parent.parent
+                data_path = project_root / "data" / "StudentsPerformance.csv"
             
             # Load and prepare data
             df = pd.read_csv(data_path)
@@ -282,7 +296,7 @@ class ScorePredictor:
         except Exception as e:
             raise Exception(f"Error training {score_type} model: {e}")
     
-    def train_all(self, data_path="../data/StudentsPerformance.csv"):
+    def train_all(self, data_path=None):
         """Train all score prediction models"""
         results = {}
         for score_type in self.VALID_SCORE_TYPES:

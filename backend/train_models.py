@@ -21,6 +21,13 @@ def train_all_models():
     print("=" * 50)
     
     try:
+        # Get the absolute path to the data file
+        current_file = Path(__file__).resolve()
+        project_root = current_file.parent.parent
+        data_path = project_root / "data" / "StudentsPerformance.csv"
+        
+        print(f"📁 Using data file: {data_path}")
+        
         # Initialize predictor
         predictor = ScorePredictor()
         
