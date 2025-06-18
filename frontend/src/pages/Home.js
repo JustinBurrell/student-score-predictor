@@ -90,7 +90,7 @@ const Home = () => {
           animate={isLoaded ? "visible" : "hidden"}
           exit="exit"
         >
-          Using the power of artificial intelligence and machine learning, this project predicts student test scores based on a dataset that was cleaned, transformed, and analyzed to uncover key performance trends.
+          As a high school academic counselor, you're reviewing a class of students using a regression model trained on data from 1,000 students. This tool predicts test scores based on key academic and demographic factors, helping you identify where students may need additional support. It’s designed to assist you in providing the right resources to ensure every student can succeed, no matter their background.
         </motion.p>
       </div>
 
@@ -177,7 +177,7 @@ const Home = () => {
           >
             <FeatureCard
               title="AI/ML Powered Predictions"
-              description="Demonstrates the complete machine learning lifecycle—from data preprocessing to model deployment. The project showcases the critical importance of data cleaning, feature engineering, and the iterative process of building effective predictive models."
+              description="Demonstrates the complete machine learning lifecycle, from data preprocessing to model deployment. The project showcases the critical importance of data cleaning, feature engineering, and the iterative process of building effective predictive models."
             />
           </motion.div>
           <motion.div
