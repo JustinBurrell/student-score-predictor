@@ -1,0 +1,39 @@
+name: Keep Backend Alive
+
+on:
+  schedule:
+    # Run every 10 minutes during active hours (UTC)
+    - cron: '*/10 14-22 * * *'  # 10 AM - 8 PM UTC (6 AM - 4 PM EST)
+    - cron: '*/15 23,0-13 * * *'  # Every 15 minutes during off-hours
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    
+    steps:
+      - name: Ping Backend Health Check
+        run: |
+          echo "🔄 Pinging backend to keep it warm..."
+          
+          # Try the health endpoint
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://student-score-predictor-api.onrender.com/health)
+          
+          if [ "$response" = "200" ]; then
+            echo "✅ Backend is responding (HTTP $response)"
+          else
+            echo "⚠️  Backend returned HTTP $response - it might be starting up"
+          fi
+          
+          # Also try a simple prediction endpoint to ensure full functionality
+          echo "🧠 Testing prediction endpoint..."
+          prediction_response=$(curl -s -o /dev/null -w "%{http_code}" https://student-score-predictor-api.onrender.com/predict/all)
+          
+          if [ "$prediction_response" = "400" ] || [ "$prediction_response" = "200" ]; then
+            echo "✅ Prediction endpoint is accessible (HTTP $prediction_response)"
+          else
+            echo "⚠️  Prediction endpoint returned HTTP $prediction_response"
+          fi
+          
+          echo "🎯 Keep-alive ping completed at $(date)" 
